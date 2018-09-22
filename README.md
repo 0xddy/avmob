@@ -26,6 +26,25 @@
     static final boolean USE_PROXY = true;
 
 ```
+### 怎么运行项目？
+
+方法 1 ：
+
+安装Idea导入项目，右边工具栏 Gradle -> Tasks -> build -> bootJar
+
+方式 2 ：下载Gradle，添加系统环境，再项目目录执行
+
+`gradle build`
+
+生成 jar 或者 war 
+
+`gradle bootJar`
+
+
+具体百度搜索 springboot gradle 打包jar
+
+
+
 
 ### 2. 部分提示！
 
@@ -38,5 +57,7 @@
 在模板文件里面不要乱格式化代码，会导致 FreeMaker 代码排版错误。
 
 ![666](https://ws1.sinaimg.cn/large/005LHiOnly1fvip85mjqoj31fy0p875f.jpg)
+
+
 
 
