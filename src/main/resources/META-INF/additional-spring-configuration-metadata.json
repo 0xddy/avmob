@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "okhttp.proxy",
+      "type": "java.lang.Boolean",
+      "description": "Description for okhttp.proxy."
+  }
+] }

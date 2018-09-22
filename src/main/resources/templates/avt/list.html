@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <#assign title="Avt - ${cateName} 全部视频">
+    <#assign active=[1,1]>
+    <#include "/inc/header.html">
+    <#include "/inc/frame.html">
+
+    <script src="/js/jquery.lazyload.js"></script>
+
+    <style>
+        body, html {
+            background-color: #FFFFFF;
+        }
+
+        #pager{
+            width: 100%;
+            margin-top: 40px;
+            margin-bottom: 70px;
+            text-align:center;
+        }
+        .prev_btn{
+            margin-right: 20px;
+        }
+
+        a{
+            text-decoration:none;
+        }
+        .mdui-color-fab{
+            color: #fff !important;
+            background-color: #27ae60 !important;
+        }
+
+        .mdui-color-btn-next{
+            color: #fff !important;
+            background-color: #2ecc71 !important;
+        }
+        .mdui-color-btn-prev{
+            color: #fff !important;
+            background-color: #2ecc71 !important;
+        }
+
+    </style>
+
+    <script type="text/javascript" charset="utf-8">
+        $(function() {
+            $("img.lazy").lazyload({effect: "fadeIn"});
+        });
+
+        function search() {
+            mdui.prompt('请输入关键词', '搜索',
+                function (value) {
+                    window.setTimeout(function () {
+                        window.location.href = 'list?page=1&keyword='+value;
+                    },200);
+                },
+                function (value) {
+
+                },
+                {confirmText:'搜一下',history:true,cancelText:"取消"}
+            );
+        }
+
+    </script>
+
+</head>
+
+
+<div class="mdui-container">
+
+    <#if (data?size>0)>
+
+    <div class="mdui-row-xs-3 mdui-row-sm-4 mdui-row-md-6 mdui-grid-list">
+
+        <#list data as item>
+
+        <div class="mdui-col" style="margin-top: 20px">
+
+            <a href="player?href=${item.href}&title=${item.title}">
+
+                <div class="mdui-card">
+                    <div class="mdui-card-media">
+                        <img class="lazy" data-original="${item.thumbnail}">
+
+                    </div>
+
+                    <div class="mdui-card-primary">
+                        <!--<div class="mdui-card-primary-title">Title</div>-->
+                        <div class="mdui-card-primary-subtitle mdui-text-truncate"
+                             mdui-tooltip="{content: '${item.title} - ${item.time}'}"
+                             style="font-size: 10px">${item.title}
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </#list></div>
+
+    <#else>
+
+    <div class="mdui-center mdui-valign" style="width: 100%;height: 500px">
+
+        <div class="mdui-row mdui-center">
+
+            <a href="list?page=${page}<#if cate??>&cate=${cate}</#if><#if keyword??>&keyword=${keyword}</#if>">
+                <button type="button"
+                        class="prev_btn mdui-btn mdui-btn-raised mdui-ripple mdui-color-red">
+                    <i class="mdui-icon mdui-icon-left material-icons">error_outline</i>点击重新加载</button>
+            </a>
+
+        </div>
+
+
+    </div>
+
+    </#if>
+
+<!-- pager -->
+<#assign nextPage=page+1>
+<#assign prevPage=page-1>
+
+<div id="pager">
+    <div class="mdui-btn-group">
+        <#if page<=1>
+            <#assign prevPage=1>
+        <#else>
+        <a href="list?page=${prevPage}&cate=<#if cate??>${cate}</#if><#if keyword??>&keyword=${keyword}</#if>">
+        <button type="button"
+                class="prev_btn mdui-btn mdui-btn-raised mdui-ripple mdui-color-btn-prev">上一页</button>
+        </a>
+        </#if>
+        <a href="list?page=${nextPage}<#if cate??>&cate=${cate}</#if><#if keyword??>&keyword=${keyword}</#if>">
+            <button type="button"
+                    class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-btn-next">下一页</button>
+        </a>
+    </div>
+</div>
+
+<div class="mdui-fab-wrapper" id="search_fab">
+    <button class="mdui-fab mdui-ripple mdui-color-fab" onclick="search()">
+        <i class="mdui-icon material-icons mdui-color-fab">search</i>
+    </button>
+
+</div>
+
+</div>
+
+<#include "/inc/footer.html">
+
+</body>
+</html>

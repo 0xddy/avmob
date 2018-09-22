@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <#assign title="${title}">
+    <#assign active=[2,0]>
+    <#include "/inc/header.html">
+    <#include "/inc/frame.html">
+    <link rel="stylesheet" href="/css/dplayer/DPlayer.min.css">
+    <script src="/js/dplayer/DPlayer.min.js"></script>
+
+    <style>
+        body, html {
+            background-color: #FFFFFF;
+        }
+
+        #dplayer {
+            height: 300px;
+            margin-top: 40px;
+        }
+
+    </style>
+
+    <script>
+
+        function resizeVideo(){
+            try {
+                var videoDom = $('#dplayer');
+                var width = $(videoDom).width();
+                var height = width * 0.5614035;
+                $(videoDom).height(height);
+
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        $(function () {
+
+            window.onresize=function(){
+                resizeVideo();
+            };
+            resizeVideo();
+            var dp = new DPlayer({
+                container: document.getElementById('dplayer'),
+                screenshot:false,
+                video: {
+                    url: '<#if data.video??>${data.video}</#if>'
+                }
+            });
+        });
+
+    </script>
+
+</head>
+
+
+<div class="mdui-container">
+
+    <div class="mdui-video-fluid">
+        <div id="dplayer"></div>
+    </div>
+</div>
+
+<#include "/inc/footer.html">
+
+</body>
+</html>

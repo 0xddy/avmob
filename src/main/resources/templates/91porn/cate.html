@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <#assign title="91Porn - 分类">
+    <#assign active=[2,2]>
+    <#include "/inc/header.html">
+    <#include "/inc/frame.html">
+
+    <style>
+        body, html {
+            background-color: #FFFFFF;
+        }
+
+        .mdui-list-item-content{
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+
+<div class="mdui-container">
+
+
+    <#if (data?size<=0)>
+
+    <#else>
+
+        <ul class="mdui-list">
+
+            <#list data as item>
+
+            <a href="list?cate=${item.href}&cateName=${item.title}&page=1">
+
+                <li class="mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-avatar mdui-icon material-icons">folder</i>
+                    <div class="mdui-list-item-content">${item.title}</div>
+
+                    <#if item.num??>
+                    <div>${item.num}</div>
+                </#if>
+
+                </li>
+
+            </a>
+
+        </#list>
+
+        </ul>
+
+    </#if>
+
+
+
+</div>
+
+<#include "/inc/footer.html">
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <#assign title="AvMob">
+    <#assign active=[0,0]>
+    <#include "/inc/header.html">
+    <#include "/inc/frame.html">
+
+    <style>
+        body, html {
+            background-color: #FFFFFF;
+        }
+    </style>
+
+</head>
+
+
+<div class="mdui-panel" style="margin-top: 20px" mdui-panel>
+
+    <div class="mdui-panel-item mdui-panel-item-open">
+        <div class="mdui-panel-item-header">Runtime</div>
+        <div class="mdui-panel-item-body" style="height: auto;">
+            <p>PID：${pid}</p>
+            <p>JVM Total Memory：${totalMemory}M</p>
+            <p>JVM Free Memory：${freeMemory}M</p>
+            <p>JVM Max Memory：${maxMemory}M</p>
+            <p>JVM Used Memory：${totalMemory-freeMemory}M</p>
+            <p></p>
+            <p>程序已运行：${starTime}</p>
+        </div>
+    </div>
+    <div class="mdui-panel-item mdui-panel-item-open">
+        <div class="mdui-panel-item-header">运行环境</div>
+        <div class="mdui-panel-item-body" style="height: auto;">
+            <p>Class运行目录：${projectDir}</p>
+            <p>JVM可以使用处理器个数：${availableProcessors}</p>
+            <p>Java运行环境版本：${javaVersion}</p>
+            <p>Java的运行环境供应商：${javaVendor}</p>
+            <p>Java的安装路径：${javaPath}</p>
+        </div>
+    </div>
+    <div class="mdui-panel-item mdui-panel-item-open">
+        <div class="mdui-panel-item-header">操作系统</div>
+        <div class="mdui-panel-item-body" style="height: auto;">
+            <p>OS名称：${osName}</p>
+            <p>OS构架：${osArch}</p>
+        </div>
+    </div>
+</div>
+
+<#include "/inc/footer.html">
+
+</body>
+</html>
