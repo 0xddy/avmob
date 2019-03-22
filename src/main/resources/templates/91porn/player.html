@@ -41,6 +41,8 @@
                 resizeVideo();
             };
             resizeVideo();
+
+        <#if !isApp>
             var dp = new DPlayer({
                 container: document.getElementById('dplayer'),
                 screenshot:false,
@@ -48,6 +50,18 @@
                     url: '<#if data.video??>${data.video}</#if>'
                 }
             });
+
+        <#else>
+            var videoDom = $('#dplayer');
+            $(videoDom).css("background","#000000");
+            $(videoDom).css('text-align','center');
+            $(videoDom).css('line-height',$(videoDom).height()+'px');
+            $(videoDom).html('<span style="color:white">点击播放</span>');
+            $(videoDom).click(function () {
+                window.bt.video('<#if data.video??>${data.video}</#if>','');
+            });
+
+        </#if>
         });
 
     </script>

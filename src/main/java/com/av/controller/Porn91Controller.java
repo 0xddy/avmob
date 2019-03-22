@@ -2,16 +2,22 @@ package com.av.controller;
 
 import com.av.base.BaseController;
 import com.av.decoder.Porn91Decoder;
+import com.av.utils.CookieUtils;
 import com.av.utils.OkHttp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +34,7 @@ public class Porn91Controller extends BaseController {
     @Autowired
     Porn91Decoder porn91Decoder;
 
-
-    static String BASE = "http://91porn.com/";
+    public static String BASE = "http://91porn.com/";
     static String BASE_URL = BASE + "v.php";
     static String BASE_VIDEO_URL = BASE + "view_video.php?viewkey=";
 
@@ -54,6 +59,13 @@ public class Porn91Controller extends BaseController {
             cate.put("href", entry.getKey());
             cateList.add(cate);
         }
+    }
+
+    @RequestMapping("/decode")
+    @ResponseBody
+    public String decode() {
+
+        return "解密失败";
     }
 
     /**
@@ -143,14 +155,21 @@ public class Porn91Controller extends BaseController {
     }
 
     @GetMapping(value = "/player")
-    public String WebPlayer(String viewkey, @RequestParam HashMap params, ModelMap modelMap) {
+    public String WebPlayer(HttpServletRequest httpServletRequest, String viewkey, @RequestParam HashMap params, ModelMap modelMap) {
 
         String title = (String) params.get("title");
         String url = BASE_VIDEO_URL + viewkey;
         String html = okHttp.GET(url);
-
         Map data = porn91Decoder.parseData(html);
 
+        String client = CookieUtils.getCookie(httpServletRequest, "client");
+
+        System.out.println(client);
+        if (client != null && client.equalsIgnoreCase("cn.lmcw.koa")) {
+            modelMap.addAttribute("isApp", true);
+        } else {
+            modelMap.addAttribute("isApp", false);
+        }
         modelMap.addAttribute("data", data);
         modelMap.addAttribute("title", title == null ? "" : title);
         return "/91porn/player";

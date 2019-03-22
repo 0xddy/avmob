@@ -1,10 +1,10 @@
 package com.av.utils;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -12,11 +12,13 @@ import org.springframework.util.StringUtils;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -26,7 +28,7 @@ public class OkHttp {
 
 
     static final Proxy.Type PROXY_TYPE = Proxy.Type.SOCKS;
-    static final String PROXY_ADDRESS = "192.168.100.5";
+    static final String PROXY_ADDRESS = "192.168.1.104";
     static final int PROXY_PORT = 1080;
     static final boolean USE_PROXY = true;
 
@@ -35,37 +37,68 @@ public class OkHttp {
     @Cacheable(value = "list", key = "#url", unless = "#result == null")
     public String GET(String url) {
 
+        return GET(url, 1);
+    }
+
+    public String GET(String url, int retry) {
+
         String html = null;
+
+        HashMap<String,String> headers = new HashMap<>();
+        headers.put("Accept-Language","zh-CN,zh;q=0.9");
+        headers.put("Referer",url);
+        headers.put("X-Forwarded-For",getRandomIP());
+        Connection connection = Jsoup.connect(url).userAgent(USER_AGENT).headers(headers);
+        if(USE_PROXY){
+            connection.proxy(new Proxy(PROXY_TYPE, new InetSocketAddress(PROXY_ADDRESS, PROXY_PORT)));
+        }
+
         OkHttpClient.Builder OkHttpClientBuilder = new OkHttpClient.Builder();
         if (USE_PROXY) {
             OkHttpClientBuilder.proxy(new Proxy(PROXY_TYPE, new InetSocketAddress(PROXY_ADDRESS, PROXY_PORT)));
         }
-        HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor(new HttpLogger());
-        logInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        OkHttpClientBuilder.addInterceptor(logInterceptor);
-        OkHttpClient okHttpClient = OkHttpClientBuilder.build();
-        Request.Builder builder = new Request.Builder();
-        Request request = builder.get()
-                .url(url)
-                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
-                .addHeader("User-Agent", USER_AGENT)
-                .addHeader("Referer", url)
-                .addHeader("X-Forwarded-For", getRandomIP())
-                .build();
-
-        Call call = okHttpClient.newCall(request);
-        Response response = null;
+        connection.followRedirects(true);
         try {
-            response = call.execute();
-            if (response.code() == 200) {
-                html = response.body().string();
-            }
+            html = connection.get().html();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (response != null)
-                response.body().close();
         }
+
+//        HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor(new HttpLogger());
+//        logInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+//        OkHttpClientBuilder.addInterceptor(logInterceptor);
+//
+//        OkHttpClient okHttpClient = OkHttpClientBuilder.build();
+//        Request.Builder builder = new Request.Builder();
+//        Request request = builder.get()
+//                .url(url)
+//                .addHeader("Accept-Language", "zh-CN,zh;q=0.9")
+//                .addHeader("User-Agent", USER_AGENT)
+//                .addHeader("Referer", url)
+//                .addHeader("X-Forwarded-For", getRandomIP())
+//                .build();
+//
+//        Call call = okHttpClient.newCall(request);
+//        Response response = null;
+//        try {
+//
+//            response = call.execute();
+//            if (response.code() == 200) {
+//                html = response.body().string();
+//            } else if (response.code() == 301 || response.code() == 302) {
+//                if (response.isRedirect()) {
+//                    String locationUrl = response.header("Location");
+//                    retry++;
+//                    if (retry <= 3)
+//                        GET(locationUrl, retry);
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (response != null)
+//                response.body().close();
+//        }
         return html;
     }
 
@@ -95,7 +128,7 @@ public class OkHttp {
 
         if (!StringUtils.isEmpty(clientRange))
             builder.addHeader("Range", clientRange);
-        if(!StringUtils.isEmpty(ifRange))
+        if (!StringUtils.isEmpty(ifRange))
             builder.addHeader("If-Range", ifRange);
         Request request = builder.build();
 
@@ -132,10 +165,10 @@ public class OkHttp {
                     response1.setHeader("data", data);
                 if (!StringUtils.isEmpty(acceptRanges))
                     response1.setHeader("Accept-Ranges", acceptRanges);
-                if(!StringUtils.isEmpty(lastModified))
-                    response1.setHeader("Last-Modified",lastModified);
-                if(!StringUtils.isEmpty(xModH264Streaming))
-                    response1.setHeader("X-Mod-H264-Streaming",xModH264Streaming);
+                if (!StringUtils.isEmpty(lastModified))
+                    response1.setHeader("Last-Modified", lastModified);
+                if (!StringUtils.isEmpty(xModH264Streaming))
+                    response1.setHeader("X-Mod-H264-Streaming", xModH264Streaming);
 
                 byte[] b = new byte[1024];
                 int len;

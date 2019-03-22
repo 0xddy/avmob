@@ -18,7 +18,6 @@ public class CacheConfiguration {
     @Bean(name = "appEhCacheCacheManager")
     public EhCacheCacheManager ehCacheCacheManager(EhCacheManagerFactoryBean bean) {
 
-
         return new EhCacheCacheManager(bean.getObject());
     }
 

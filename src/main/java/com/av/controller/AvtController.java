@@ -2,10 +2,10 @@ package com.av.controller;
 
 import com.av.base.BaseController;
 import com.av.decoder.DefaultDecoder;
+import com.av.utils.CookieUtils;
 import com.av.utils.OkHttp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ public class AvtController extends BaseController {
     @Autowired
     DefaultDecoder decoder;
 
-    static String BASE_URL = "http://www.avtbg.com/";
+    public static String BASE_URL = "http://www.avtbv.com/";
 
     @ResponseBody
     @GetMapping(value = "/api/update")
@@ -163,16 +164,23 @@ public class AvtController extends BaseController {
     }
 
     @GetMapping(value = "/player")
-    public String WebPlayer(@RequestParam String href, @RequestParam HashMap params, ModelMap modelMap) {
+    public String WebPlayer(HttpServletRequest httpServletRequest, @RequestParam String href, @RequestParam HashMap params, ModelMap modelMap) {
 
         String url = BASE_URL + URLEncoder.encode(href);
         String title = (String) params.get("title");
         String html = okHttp.GET(url);
+
+        String client = CookieUtils.getCookie(httpServletRequest, "client");
+
+        if (client != null && client.equalsIgnoreCase("cn.lmcw.koa")) {
+            modelMap.addAttribute("isApp", true);
+        } else {
+            modelMap.addAttribute("isApp", false);
+        }
         Map data = decoder.parseVideo(html);
         modelMap.addAttribute("data", data);
         modelMap.addAttribute("title", title == null ? "" : title);
         return "/avt/player";
     }
-
 
 }

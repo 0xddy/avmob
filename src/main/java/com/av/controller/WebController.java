@@ -1,6 +1,7 @@
 package com.av.controller;
 
 
+import com.av.RunApplication;
 import com.av.utils.OkHttp;
 import com.av.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +27,6 @@ public class WebController {
 
     @GetMapping(value = "/")
     public String IndexRender(ModelMap modelMap) {
-
 
         Properties props = System.getProperties();
         Runtime runtime = Runtime.getRuntime();
@@ -65,11 +66,18 @@ public class WebController {
     }
 
     @GetMapping(value = "/pip")
-    public void PipStream(@RequestHeader Map headers,
-                          HttpServletResponse response) {
+    public void PipStream(@RequestHeader Map headers, HttpServletResponse response) {
 
         String url = "http://185.38.13.130//mp43/282011.mp4?st=8dXuoLBwtqL5rio9mhQeHA&e=1537249792";
         okHttp.stream(url, headers, response);
     }
+
+    @ResponseBody
+    @GetMapping(value = "/reloadConf")
+    public String reloadConf() {
+        RunApplication.loadConf();
+        return "重载配置完成";
+    }
+
 
 }
